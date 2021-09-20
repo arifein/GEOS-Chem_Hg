@@ -4535,7 +4535,7 @@ CONTAINS
              Is_Drydep     = T
              Is_Wetdep     = F
              Is_Hg0        = T
-             DD_F0         = 0.0002_fp
+             DD_F0         = 1.0e-5_fp
              DD_Hstar_old  = 0.11_fp
 
           CASE( 'HG2',     'HG2_CAN', 'HG2_USA', 'HG2_CAM', 'HG2_SAM',      &
