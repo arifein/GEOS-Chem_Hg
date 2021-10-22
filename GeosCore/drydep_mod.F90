@@ -1456,7 +1456,7 @@ CONTAINS
                         State_Grid%YMid(I,J) >  -34  .AND. &
                         State_Grid%YMid(I,J) <  14 ) THEN
 
-                      F0(K) = 9.0e-05_f8 ! increase reactivity, as inferred from observations
+                      F0(K) = 2.0e-01_f8 ! increase reactivity, as inferred from observations
                    ELSE
                       F0(K) = 3.0e-05_f8 ! elsewhere, lower reactivity 
                    ENDIF
