@@ -149,7 +149,7 @@ MODULE DRYDEP_MOD
   INTEGER                        :: NUMDEP,   NWATER
   INTEGER                        :: DRYHg0,   DRYHg2,   DryHgP
   INTEGER                        :: id_ACET,  id_ALD2,  id_O3
-  INTEGER                        :: id_MENO3, id_ETNO3
+  INTEGER                        :: id_MENO3, id_ETNO3, id_Hg0
   INTEGER                        :: id_NK1
   INTEGER                        :: id_HNO3,  id_PAN,   id_IHN1
 
@@ -906,7 +906,7 @@ CONTAINS
     REAL(f8), INTENT(IN) :: TEMP   (State_Grid%NX,State_Grid%NY) ! Temperature [K]
     REAL(f8), INTENT(IN) :: SUNCOS (State_Grid%NX,State_Grid%NY) ! Cos of solar zenith angle
     LOGICAL,  INTENT(IN) :: AIROSOL(NUMDEP)      ! =T denotes aerosol species
-    REAL(f8), INTENT(IN) :: F0     (NUMDEP)      ! React. factor for oxidation
+    REAL(f8), INTENT(INOUT) :: F0     (NUMDEP)      ! React. factor for oxidation
                                                  !  of biological substances
     REAL(f8), INTENT(IN) :: HSTAR  (NUMDEP)      ! Henry's law constant
     REAL(f8), INTENT(IN) :: XMW    (NUMDEP)      ! Molecular weight [kg/mol]
@@ -1447,6 +1447,20 @@ CONTAINS
                 ENDIF
 
              ELSE
+
+                ! Check latitude and longitude, alter F0 only for Amazon rainforest for Hg
+                IF (N_SPC .EQ. ID_Hg0) THEN ! Check for Hg0
+                   IF ( II .EQ. 6 .AND. & ! if rainforest land type
+                        State_Grid%XMid(I,J) > -82 .AND. & ! bounding box of Amazon
+                        State_Grid%XMid(I,J) < -33  .AND. &
+                        State_Grid%YMid(I,J) >  -34  .AND. &
+                        State_Grid%YMid(I,J) <  14 ) THEN
+
+                      F0(K) = 9.0e-05_f8 ! increase reactivity, as inferred from observations
+                   ELSE
+                      F0(K) = 3.0e-05_f8 ! elsewhere, lower reactivity 
+                   ENDIF
+                ENDIF
 
                 !XMWH2O = 18.e-3_f8 ! Use global H2OMW (ewl, 1/6/16)
                 XMWH2O = H2OMW * 1.e-3_f8
@@ -4093,6 +4107,7 @@ CONTAINS
     id_ALD2   = 0
     id_MENO3  = 0
     id_ETNO3  = 0
+    id_Hg0  = 0
     id_HNO3   = IND_('HNO3'  )
     id_PAN    = IND_('PAN'   )
     id_IHN1   = IND_('IHN1'  )
@@ -4267,6 +4282,10 @@ CONTAINS
           CASE( 'ETNO3' )
              ! Flag the species ID of ETNO3 for use above.
              id_ETNO3 = SpcInfo%ModelId
+
+          CASE( 'HG0', 'Hg0' )
+             ! for finding Hg0 drydep veloc
+             id_Hg0 = SpcInfo%ModelId
 
           CASE( 'NITs', 'NITS' )
              ! DEPNAME for NITs has to be in all caps, for
