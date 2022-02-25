@@ -1448,13 +1448,11 @@ CONTAINS
 
              ELSE
 
-                ! Check latitude and longitude, alter F0 only for Amazon rainforest for Hg
+                ! Check latitude and longitude, alter F0 only for rainforest for Hg
                 IF (N_SPC .EQ. ID_Hg0) THEN ! Check for Hg0
                    IF ( II .EQ. 6 .AND. & ! if rainforest land type
-                        State_Grid%XMid(I,J) > -82 .AND. & ! bounding box of Amazon
-                        State_Grid%XMid(I,J) < -33  .AND. &
-                        State_Grid%YMid(I,J) >  -34  .AND. &
-                        State_Grid%YMid(I,J) <  14 ) THEN
+                        State_Grid%YMid(I,J) >  -35  .AND. & ! bounding box of tropics
+                        State_Grid%YMid(I,J) <  35 ) THEN
 
                       F0(K) = 2.0e-01_f8 ! increase reactivity, as inferred from observations
                    ELSE
