@@ -430,7 +430,7 @@ CONTAINS
     REAL(fp)            :: AREA_M2, DRYSOIL_HG
     REAL(fp)            :: SUNCOSVALUE
     REAL(fp)            :: FRAC_SNOWFREE_LAND
-    REAL(fp)            :: SOIL_EMIS_FAC
+    REAL(fp)            :: SOIL_EMIS_FAC, EXP_SOIL, EXP_RAD
 !
 ! !DEFINED PARAMETERS:
 !
@@ -450,8 +450,10 @@ CONTAINS
     ! comment out resolution dependence. Users of 2x2.5 or nested
     ! resolutions are encouraged to test and update these as needed (J
     ! Fisher 4/2016)
+
+ 
     !IF      ( TRIM(State_Grid%GridRes) == '4.0x5.0') THEN
-       SOIL_EMIS_FAC = 1.6e-2_fp * 0.9688e+0_fp
+    !       SOIL_EMIS_FAC = 1.6e-2_fp * 0.9688e+0_fp
     !ELSE IF ( TRIM(State_Grid%GridRes) == '2.0x2.5' ) THEN
     !   SOIL_EMIS_FAC=1.6e-2_fp
     !ELSE IF ( TRIM(State_Grid%GridRes) == '0.5x0.625' ) THEN
@@ -476,6 +478,13 @@ CONTAINS
     !   SOIL_EMIS_FAC = 2.4e-2_fp*.5742e+0_fp ! for sunlight function
     !ENDIF
 
+    ! A. Feinberg 05/2022 - implementing new soil emission scheme based
+    ! on formulation in Khan et al. (2019), 10.1039/c9em00341j
+    ! emis = a * conc^b * rad^c
+    ! where a, b, and c are tuned parameters
+    SOIL_EMIS_FAC = 220e+0_fp ! prefactor, a
+    EXP_SOIL = 2.6e+0_fp ! exponent for soil conc, b
+    EXP_RAD = 0.6e+0_fp ! exponent for radiation, c 
     !=================================================================
     ! SOILEMIS begins here!
     !=================================================================
@@ -506,12 +515,15 @@ CONTAINS
           ! attenuated based on LAI
           LIGHTFRAC = EXP( -TAUZ / SUNCOSVALUE )
 
-          ! Dry soil Hg concentration, ng Hg /g soil
-          DRYSOIL_HG = DRYSOIL_PREIND_HG * EHg0_dist(I,J)
+          ! Dry soil Hg concentration, ug Hg /g soil
+          DRYSOIL_HG = DRYSOIL_PREIND_HG * EHg0_dist(I,J) / 1.0e+3_fp
 
           ! Soil emissions, ng /m2 /h
-          SOIL_EMIS = EXP( 0.0011 * State_Met%SWGDN(I,J) * LIGHTFRAC ) * &
-                      DRYSOIL_HG * SOIL_EMIS_FAC
+          ! updated to new formulation by A. Feinberg
+          ! (improved diurnal cycle and response to LAI)
+          SOIL_EMIS = SOIL_EMIS_FAC * &
+                      (DRYSOIL_HG  ** EXP_SOIL) * &
+                      ((State_Met%SWGDN(I,J) * LIGHTFRAC ) ** EXP_RAD)  
 
           ! Grid box surface area [m2]
           AREA_M2   = State_Grid%Area_M2(I,J)
