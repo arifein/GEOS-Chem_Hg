@@ -433,6 +433,13 @@ CONTAINS
     REAL(fp)            :: SOIL_EMIS_FAC, EXP_SOIL, EXP_RAD
 
 
+! !VARIABLES FOR CALCULATING SOIL EMISSIONS ON SUB-GRID SCALE
+    ! Pointers to fields in State_Met
+    INTEGER,  POINTER :: IREG(:,:) ! Number of land types
+    INTEGER,  POINTER :: ILAND(:,:,:) ! index of land type 
+    INTEGER,  POINTER :: IUSE(:,:,:) ! permil of area covered
+    REAL(fp), POINTER :: XLAI(:,:,:) ! LAI for each sub-grid land type
+    INTEGER  :: LDT ! Loop counter
 !
 ! !DEFINED PARAMETERS:
 !
@@ -488,13 +495,6 @@ CONTAINS
     EXP_SOIL = 2.5e+0_fp ! exponent for soil conc, b
     EXP_RAD = 0.76e+0_fp ! exponent for radiation, c 
 
-! !VARIABLES FOR CALCULATING SOIL EMISSIONS ON SUB-GRID SCALE
-    ! Pointers to fields in State_Met
-    INTEGER,  POINTER :: IREG(:,:) ! Number of land types
-    INTEGER,  POINTER :: ILAND(:,:,:) ! index of land type 
-    INTEGER,  POINTER :: IUSE(:,:,:) ! permil of area covered
-    REAL(fp), POINTER :: XLAI(:,:,:) ! LAI for each sub-grid land type
-    INTEGER  :: LDT ! Loop counter
 
     ! Initialize pointers
     IREG    => State_Met%IREG
@@ -533,10 +533,10 @@ CONTAINS
           AREA_M2   = State_Grid%Area_M2(I,J)
 
           ! Calculate shading effects due to vegetation and soil emissions in subgrid: 
-          DO 170 LDT = 1, IREG(I,J) !Loop over the # of Olson land types in this grid box (I,J)
+          DO LDT = 1, IREG(I,J) !Loop over the # of Olson land types in this grid box (I,J)
             ! If the land type is not represented in grid
             ! box  (I,J), then skip to the next land type
-            IF ( IUSE(I,J,LDT) == 0 ) GOTO 170
+            IF ( IUSE(I,J,LDT) == 0 ) CYCLE
 
             ! attenuate solar radiation based on function of leaf area index
             ! Jacob and Wofsy 1990 equations 8 & 9
@@ -555,7 +555,7 @@ CONTAINS
                         (DRYSOIL_HG  ** EXP_SOIL) * &
                         ((State_Met%SWGDN(I,J) * LIGHTFRAC ) ** EXP_RAD)  
 
-         ENDDO
+           ENDDO
 
          ! convert soilnat from ng /m2 /h -> kg /gridbox /s
          EHg0_so(I,J) = SOIL_EMIS * AREA_M2 * 1e-12_fp / &
