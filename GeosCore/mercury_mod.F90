@@ -2430,8 +2430,8 @@ CONTAINS
        RETURN
     ENDIF
 
-    ! First-time initialization
-    IF ( FIRST ) THEN
+    ! First-time initialization ! AF_MIT: commented out so that can run interannually varying simulations
+!    IF ( FIRST ) THEN
 
        ! Check that emissions are turned on. Print error message
        ! and stop GEOS-Chem if emissions are turned off (ewl, 9/1/15)
@@ -2452,9 +2452,9 @@ CONTAINS
           RETURN
        ENDIF
 
-       ! Reset first-time flag
-       FIRST = .FALSE.
-    ENDIF
+   !    ! Reset first-time flag
+   !    FIRST = .FALSE.
+   ! ENDIF
 
     !=================================================================
     ! Call emission routines for Hg(0), Hg(II), and Hg(P)
