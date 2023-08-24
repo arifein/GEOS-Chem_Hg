@@ -4174,30 +4174,30 @@ CONTAINS
     !=================================================================
     ! Print totals to the screen in [Gg/yr]
     !=================================================================
-    WRITE( 6, '(a)' ) REPEAT( '=', 79 )
-    WRITE( 6, 210   )
-    WRITE( 6, '(a)' )
-    WRITE( 6, 211   ) SUM( EHg0_an ) * SEC_PER_YR * 1e-6_fp
-    WRITE( 6, 213   ) SUM( EHg0_ln ) * SEC_PER_YR * 1e-6_fp
-    WRITE( 6, 214   ) SUM( EHg0_geo ) * SEC_PER_YR * 1e-6_fp
-
-    ! Only write ocean total if we are doing offline ocean
-    IF ( .not. LDYNOCEAN ) THEN
-       WRITE( 6, 217   ) SUM( EHg0_oc ) * SEC_PER_YR * 1e-6_fp
-    ENDIF
-
-    WRITE( 6, 215   ) SUM( EHg2_an ) * SEC_PER_YR * 1e-6_fp
-    WRITE( 6, 216   ) SUM( EHgP_an ) * SEC_PER_YR * 1e-6_fp
-    WRITE( 6, '(a)' ) REPEAT( '=', 79 )
-
-    ! FORMAT strings
-210 FORMAT( 'M E R C U R Y   E M I S S I O N S' )
-211 FORMAT( 'Total Anthro     Hg(0)  : ', f7.3, ' [Gg/yr]' )
-213 FORMAT( 'Total Re-Emitted Hg(0)  : ', f7.3, ' [Gg/yr]' )
-214 FORMAT( 'Total Natural    Hg(0)  : ', f7.3, ' [Gg/yr]' )
-215 FORMAT( 'Total Anthro     Hg(II) : ', f7.3, ' [Gg/yr]' )
-216 FORMAT( 'Total Anthro     HgP    : ', f7.3, ' [Gg/yr]' )
-217 FORMAT( 'Total Ocean      Hg(0)  : ', f7.3, ' [Gg/yr]' )
+!    WRITE( 6, '(a)' ) REPEAT( '=', 79 )
+!    WRITE( 6, 210   )
+!    WRITE( 6, '(a)' )
+!    WRITE( 6, 211   ) SUM( EHg0_an ) * SEC_PER_YR * 1e-6_fp
+!    WRITE( 6, 213   ) SUM( EHg0_ln ) * SEC_PER_YR * 1e-6_fp
+!    WRITE( 6, 214   ) SUM( EHg0_geo ) * SEC_PER_YR * 1e-6_fp
+!
+!    ! Only write ocean total if we are doing offline ocean
+!    IF ( .not. LDYNOCEAN ) THEN
+!       WRITE( 6, 217   ) SUM( EHg0_oc ) * SEC_PER_YR * 1e-6_fp
+!    ENDIF
+!
+!    WRITE( 6, 215   ) SUM( EHg2_an ) * SEC_PER_YR * 1e-6_fp
+!    WRITE( 6, 216   ) SUM( EHgP_an ) * SEC_PER_YR * 1e-6_fp
+!    WRITE( 6, '(a)' ) REPEAT( '=', 79 )
+!
+!    ! FORMAT strings
+!210 FORMAT( 'M E R C U R Y   E M I S S I O N S' )
+!211 FORMAT( 'Total Anthro     Hg(0)  : ', f7.3, ' [Gg/yr]' )
+!213 FORMAT( 'Total Re-Emitted Hg(0)  : ', f7.3, ' [Gg/yr]' )
+!214 FORMAT( 'Total Natural    Hg(0)  : ', f7.3, ' [Gg/yr]' )
+!215 FORMAT( 'Total Anthro     Hg(II) : ', f7.3, ' [Gg/yr]' )
+!216 FORMAT( 'Total Anthro     HgP    : ', f7.3, ' [Gg/yr]' )
+!217 FORMAT( 'Total Ocean      Hg(0)  : ', f7.3, ' [Gg/yr]' )
 
   END SUBROUTINE MERCURY_READYR
 !EOC
